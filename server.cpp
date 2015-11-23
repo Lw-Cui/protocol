@@ -5,10 +5,9 @@
 #include <netinet/in.h>
 #include "aux.h"
 #define PORT 8080
-#define MAX 100
+#define MAX 256
 
 int main(int args, char **argv) {
-	int len;
 	int listenfd = open_listenfd(PORT);
 
 	while (1) {
@@ -16,6 +15,8 @@ int main(int args, char **argv) {
 		int clientlen = sizeof(clientaddr);
 		int serverfd = accept(listenfd, (struct sockaddr *)&clientaddr, 
 				(socklen_t *)&clientlen); 
+		FILE *fp;
+		fp = fopen("recv.data", "w");
 
 		while (1) {
 			fd_set read_set;
@@ -26,13 +27,13 @@ int main(int args, char **argv) {
 				return 0;
 
 			char recv[MAX];
-			if (FD_ISSET(serverfd, &read_set)) {
-				if ((len = read(serverfd, recv, MAX)) <= 0)
-					break;
+			if (FD_ISSET(serverfd, &read_set) && read(serverfd, recv, MAX) > 0) {
+				fputs(recv, fp);
 				printf("%s", recv);
 			}
 		}
 		close(serverfd);
+		fclose(fp);
 	}
 	close(listenfd);
 	return 0;

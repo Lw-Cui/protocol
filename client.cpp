@@ -9,6 +9,7 @@
 
 int main(int args, char **argv) {
 	int clientfd = open_clientfd("localhost", PORT);
+	FILE *fp = fopen("raw.data", "r");
 
 	while (1) {
 		fd_set read_set;
@@ -19,15 +20,19 @@ int main(int args, char **argv) {
 		if (select(FD_SETSIZE, &read_set, NULL, NULL, &tv) < 0)
 			return 0;
 
-		int len;
 		char recv[MAX];
-		if (FD_ISSET(clientfd, &read_set)) {
-			if ((len = read(clientfd, recv, MAX)) <= 0)
-				break;
+		if (FD_ISSET(clientfd, &read_set) && read(clientfd, recv, MAX) > 0)
 			printf("%s", recv);
-		}
+
+		if (fgets(recv, 100, fp) != NULL)
+			printf("%s", recv);
+		else
+			break;
+
+		write(clientfd, recv, MAX);
 
 	}
+	fclose(fp);
 	close(clientfd);
 	return 0;
 }
