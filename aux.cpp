@@ -33,7 +33,7 @@ int open_listenfd(unsigned short port) {
 	return listenfd;
 }
 
-int open_clientfd(char *hostname, unsigned short port) {
+int open_clientfd(const char *hostname, unsigned short port) {
 	int clientfd;
 	struct hostent *hp;
 	struct sockaddr_in serveraddr;
