@@ -1,6 +1,5 @@
 #include "message.h"
 #include <string.h>
-#define MEG_LEN 300
 
 char *create_meg(ushort num, char *data) {
 	char *meg = new char[MEG_LEN];
@@ -9,6 +8,19 @@ char *create_meg(ushort num, char *data) {
 	return meg;
 }
 
+char *init_meg() {
+	char *meg = new char[MEG_LEN];
+	ushort cnt = CNTMAX;
+	memcpy(meg, &cnt, sizeof(ushort));
+	return meg;
+}
+
+char *end_meg() {
+	char *meg = new char[MEG_LEN];
+	ushort cnt = CNTMAX + 1;
+	memcpy(meg, &cnt, sizeof(ushort));
+	return meg;
+}
 
 ushort extract_num(char *meg) {
 	ushort num;
