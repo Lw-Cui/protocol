@@ -4,7 +4,9 @@
 typedef unsigned short ushort;
 typedef unsigned int uint;
 
-char *create(ushort num, uint len, char *data);
+char *create_meg(ushort num, char *data);
+ushort extract_num(char *meg);
+char *extract_data(char *meg);
 void destory(char *);
 
 bool init(ushort length);
