@@ -7,9 +7,9 @@
 #include <netinet/in.h>
 #include "aux.h"
 #include "message.h"
-#define PORT 8080
+#define PORT 8001
 /* MUST SMALLER THAN CNTMAX(0xfff) */
-#define QLEN 0xaff
+#define QLEN 3
 
 void ackprocess(std::deque<char *> &q, int num) {
 	while (!q.empty() && extract_num(q.front()) != num) {
@@ -18,14 +18,12 @@ void ackprocess(std::deque<char *> &q, int num) {
 	}
 }
 
-bool sendcontrol(std::deque<char *> &q, int clientfd ,FILE *fp, ushort &count) {
+void sendcontrol(std::deque<char *> &q, int clientfd ,FILE *fp, ushort &count) {
 	char data[MEG_LEN];
-	bool label = true;
-	while (q.size() < QLEN && (label = fgets(data, MEG_LEN - 10, fp)) != NULL) {
+	while (q.size() < QLEN && fgets(data, MEG_LEN - 10, fp) != NULL) {
 		q.push_back(create_meg(count++ % CNTMAX, data));
 		write(clientfd, q.back(), MEG_LEN);
 	}
-	return label;
 }
 
 int main(int args, char **argv) {
@@ -47,9 +45,13 @@ int main(int args, char **argv) {
 
 		char recv[MEG_LEN];
 		if (FD_ISSET(clientfd, &read_set) && read(clientfd, recv, MEG_LEN) > 0)
+			printf("RECV: %d\n", extract_num(recv));
 			if (connected) {
 				ackprocess(q, extract_num(recv));
-				if (!sendcontrol(q, clientfd, fp, count)) break;
+				sendcontrol(q, clientfd, fp, count);
+				if (q.empty()) {
+					printf("empty()!\n");
+				}
 			} else {
 				if (extract_num(recv) == CNTMAX)
 					connected = true;
