@@ -5,7 +5,7 @@
 #include <netinet/in.h>
 #include "message.h"
 #include "aux.h"
-#define PORT 8080
+#define PORT 8001
 
 int main(int args, char **argv) {
 	int listenfd = open_listenfd(PORT);
@@ -16,6 +16,7 @@ int main(int args, char **argv) {
 		int serverfd = accept(listenfd, (struct sockaddr *)&clientaddr, 
 				(socklen_t *)&clientlen); 
 		FILE *fp = fopen("recv.data", "w");
+		bool connected = false;
 
 		while (1) {
 			fd_set read_set;
@@ -26,9 +27,9 @@ int main(int args, char **argv) {
 				return 0;
 
 			char recv[MEG_LEN];
-			bool connected = false;
 
 			if (FD_ISSET(serverfd, &read_set) && read(serverfd, recv, MEG_LEN) > 0) {
+				printf("RECV: %d\n", extract_num(recv));
 				if (!connected) {
 					if (extract_num(recv) == CNTMAX) {
 						connected = true;

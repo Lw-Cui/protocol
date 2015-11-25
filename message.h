@@ -4,7 +4,7 @@ typedef unsigned short ushort;
 typedef unsigned int uint;
 
 const uint MEG_LEN = 300;
-const ushort CNTMAX = 0xfff;
+const ushort CNTMAX = 10;
 
 char *init_meg();
 char *create_meg(ushort num, char *data);
