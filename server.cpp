@@ -17,6 +17,7 @@ int main(int args, char **argv) {
 				(socklen_t *)&clientlen); 
 		FILE *fp = fopen("recv.data", "w");
 		bool connected = false;
+		char recv[MEG_LEN];
 
 		while (1) {
 			fd_set read_set;
@@ -26,22 +27,19 @@ int main(int args, char **argv) {
 			if (select(FD_SETSIZE, &read_set, NULL, NULL, &tv) < 0)
 				return 0;
 
-			char recv[MEG_LEN];
-
 			if (FD_ISSET(serverfd, &read_set) && read(serverfd, recv, MEG_LEN) > 0) {
-				printf("RECV: %d\n", extract_num(recv));
-				if (!connected) {
-					if (extract_num(recv) == CNTMAX) {
-						connected = true;
-						write(serverfd, recv, MEG_LEN);
-					}
-				} else {
+				if (connected) {
 					if (extract_num(recv) == CNTMAX + 1) break;
 					if (extract_num(recv) == CNTMAX) continue;
 
 					fputs(extract_data(recv), fp);
 					printf("%s", extract_data(recv));
 					write(serverfd, recv, MEG_LEN);
+				} else {
+					if (extract_num(recv) == CNTMAX) {
+						connected = true;
+						write(serverfd, recv, MEG_LEN);
+					}
 				}
 			}
 		}
