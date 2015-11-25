@@ -3,6 +3,7 @@
 
 char *create_meg(ushort num, char *data) {
 	char *meg = new char[MEG_LEN];
+	memset(meg, 0, MEG_LEN);
 	memcpy(meg, &num, sizeof(ushort));
 	memcpy(meg + sizeof(num), data, strlen(data));
 	return meg;

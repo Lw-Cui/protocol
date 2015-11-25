@@ -25,13 +25,16 @@ int main(int args, char **argv) {
 			if (select(FD_SETSIZE, &read_set, NULL, NULL, &tv) < 0)
 				return 0;
 
-			if (FD_ISSET(serverfd, &read_set) && read(serverfd, recv, MEG_LEN) > 0) {
+			int len;
+			if (FD_ISSET(serverfd, &read_set) && (len = read(serverfd, recv, MEG_LEN)) > 0) {
+				//if (len < MEG_LEN) continue;
 				if (connected) {
 					if (extract_num(recv) == CNTMAX + 1) break;
 					if (extract_num(recv) == CNTMAX) continue;
 
 					fputs(extract_data(recv), fp);
-					printf("%s", extract_data(recv));
+					//printf("%s", extract_data(recv));
+					printf("%d\n", extract_num(recv));
 					write(serverfd, recv, MEG_LEN);
 				} else {
 					if (extract_num(recv) == CNTMAX) {
