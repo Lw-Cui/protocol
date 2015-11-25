@@ -4,13 +4,10 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
-#include <string.h>
-#include <netinet/in.h>
 #include "aux.h"
 #include "message.h"
 #define PORT 8001
 /* MUST SMALLER THAN CNTMAX(0xfff) */
-#define QLEN 3
 
 void ackprocess(std::deque<char *> &q, int num) {
 	while (!q.empty() && extract_num(q.front()) != num) {
@@ -69,7 +66,7 @@ int main(int args, char **argv) {
 			write(clientfd, init_meg(), MEG_LEN);
 	}
 
-	write(clientfd, init_meg(), MEG_LEN);
+	write(clientfd, end_meg(), MEG_LEN);
 	fclose(fp);
 	close(clientfd);
 	return 0;
