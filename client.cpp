@@ -1,4 +1,5 @@
 #include <deque>
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -20,12 +21,14 @@ void ackprocess(std::deque<char *> &q, int num) {
 
 bool sendcontrol(std::deque<char *> &q, int clientfd ,FILE *fp, ushort &count) {
 	char data[MEG_LEN];
-	bool label = true;
-	while (q.size() < QLEN && (label = fgets(data, MEG_LEN - 10, fp)) != NULL) {
+	bool noerror = true;
+	while (q.size() < QLEN && (noerror = fgets(data, MEG_LEN - 10, fp)) != NULL) {
 		q.push_back(create_meg(count++ % CNTMAX, data));
 		write(clientfd, q.back(), MEG_LEN);
 	}
-	return label;
+	if (!noerror)
+		printf("%s\n", strerror(errno));
+	return noerror;
 }
 
 int main(int args, char **argv) {
