@@ -4,8 +4,8 @@ OBJ := ${patsubst %.cpp, %.o, $(SRC)}
 AUX := aux.o message.o
 TARGET := client.out server.out
 
-FLAG := -ggdb -c -Wall -O3
-CC := g++
+FLAG := -ggdb -c -Wall -O2
+CC := clang++-3.5
 
 all: $(TARGET)
 
